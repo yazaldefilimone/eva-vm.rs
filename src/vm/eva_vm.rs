@@ -30,7 +30,6 @@ impl EvaVM {
                 _ => {
                     // DIE!("Unknown opcode: {}", opcode);
                     DIE!("Unknown opcode: {}", opcode);
-                    return;
                 }
             }
         }
