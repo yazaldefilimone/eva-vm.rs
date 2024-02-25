@@ -1,3 +1,1 @@
-
-
-pub const OPERATION_HALT : u8 = 0x00;
+pub const OPERATION_HALT: u8 = 0x00;
