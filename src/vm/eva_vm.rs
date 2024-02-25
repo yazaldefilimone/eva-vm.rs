@@ -1,35 +1,44 @@
-mod bytecode;
-
-struct EvaVirtualMachine {
-  ip: usize,
-  code: Vec<u8>,
+use crate::bytecode::code;
+use crate::logger;
+pub struct EvaVM {
+    code: Vec<u8>,
+    ip: usize, // instruction pointer (aka program counter)
 }
-
-
-pub impl EvaVirtualMachine {
-  pub fn new() -> EvaVirtualMachine {
-    EvaVirtualMachine {
-      ip: 0,
-      code: Vec::new(),
-    }
-  }
-
-
-  pub fn exec(&mut self, program: String) -> eval::Result<()> {
-    self.ip = &code[0];
-    return self.eval();
-
-  }
-
-  pub fn eval(&mut self) {
-    loop {
-      match self.code[self.ip] {
-        bytecode::code::OPERATION_HALT => {
-          return;
+impl EvaVM {
+    pub fn new() -> EvaVM {
+        EvaVM {
+            code: Vec::new(),
+            ip: 0,
         }
-      }
     }
-  }
 
+    pub fn exec(&mut self, program: String) {
+        let _ = program;
+        self.code = vec![code::OPERATION_HALT];
+        self.eval()
+    }
+
+    // main loop
+    fn eval(&mut self) -> () {
+        loop {
+            let opcode = self.read_byte();
+            match opcode {
+                code::OPERATION_HALT => {
+                    println!("HALT");
+                    return;
+                }
+                _ => {
+                    // DIE!("Unknown opcode: {}", opcode);
+                    logger::DIE!("Unknown opcode: {}", opcode);
+                    return;
+                }
+            }
+        }
+    }
+
+    fn read_byte(&mut self) -> u8 {
+        let byte: u8 = self.code[self.ip];
+        self.ip += 1;
+        byte
+    }
 }
-
