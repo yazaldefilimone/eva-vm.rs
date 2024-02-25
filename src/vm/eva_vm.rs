@@ -1,5 +1,5 @@
 use crate::bytecode::code;
-use crate::logger;
+use crate::DIE;
 pub struct EvaVM {
     code: Vec<u8>,
     ip: usize, // instruction pointer (aka program counter)
@@ -29,7 +29,7 @@ impl EvaVM {
                 }
                 _ => {
                     // DIE!("Unknown opcode: {}", opcode);
-                    logger::DIE!("Unknown opcode: {}", opcode);
+                    DIE!("Unknown opcode: {}", opcode);
                     return;
                 }
             }
