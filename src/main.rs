@@ -1,6 +1,8 @@
 mod bytecode;
 mod logger;
 mod vm;
+mod value;
+
 
 fn main() {
     let program = "".to_string();
