@@ -48,6 +48,21 @@ impl VirtualMachine {
           let sum = get_node_value(left) + get_node_value(right);
           self.push(Node::Number(sum));
         }
+        code::SUB => {
+          let (left, right) = (self.pop(), self.pop());
+          let difference = get_node_value(left) - get_node_value(right);
+          self.push(Node::Number(difference));
+        }
+        code::MUL => {
+          let (left, right) = (self.pop(), self.pop());
+          let product = get_node_value(left) * get_node_value(right);
+          self.push(Node::Number(product));
+        }
+        code::DIV => {
+          let (left, right) = (self.pop(), self.pop());
+          let quotient = get_node_value(left) / get_node_value(right);
+          self.push(Node::Number(quotient));
+        }
         _ => {
           panic!("Unknown operation");
         }
