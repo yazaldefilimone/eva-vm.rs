@@ -1,11 +1,23 @@
 mod bytecode;
-mod logger;
+mod node;
+mod utils;
 mod vm;
-mod value;
+use node::node::Node;
+use std::fmt::Debug;
+use vm::virtual_machine::VirtualMachine;
 
+impl Debug for Node {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    match self {
+      Node::Number(n) => write!(f, "Number({})", n),
+    }
+  }
+}
 
 fn main() {
-    let program = "".to_string();
-    vm::eva_vm::EvaVM::new().exec(program);
-    println!("All done!");
+  let program = "42".to_string();
+  let mut vm = VirtualMachine::new();
+  let result = vm.compile(program);
+  println!("{:?}", result);
+  println!("All done!");
 }
