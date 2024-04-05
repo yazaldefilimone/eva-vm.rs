@@ -1,9 +1,9 @@
 use crate::bytecode::code;
 use crate::node::node;
-use crate::utils::STACK_LIMIT;
-
-use node::get_node_value;
+use crate::utils;
 use node::Node;
+use utils::get_node_value;
+use utils::STACK_LIMIT;
 
 // use node::NodeNumber;
 pub struct VirtualMachine {
