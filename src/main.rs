@@ -2,9 +2,9 @@ mod bytecode;
 mod node;
 mod utils;
 mod vm;
-use node::node::get_node_value;
 use node::node::Node;
 use std::fmt::Debug;
+use utils::get_node_value;
 use vm::virtual_machine::VirtualMachine;
 
 impl Debug for Node {
