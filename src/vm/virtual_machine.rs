@@ -2,6 +2,7 @@ use crate::bytecode::code;
 use crate::node::node;
 use crate::utils;
 use node::Node;
+use node::OperationEnum;
 use utils::get_node_value;
 use utils::STACK_LIMIT;
 
@@ -40,28 +41,24 @@ impl VirtualMachine {
           return Some(self.pop());
         }
         code::CONST => {
-          let constant = self.get_constant();
+          let constant = self._get_constant();
           self.push(constant);
         }
         code::ADD => {
-          let (left, right) = (self.pop(), self.pop());
-          let sum = get_node_value(left) + get_node_value(right);
-          self.push(Node::Number(sum));
+          let sum = self._binary_operation(OperationEnum::Add);
+          self.push(sum);
         }
         code::SUB => {
-          let (left, right) = (self.pop(), self.pop());
-          let difference = get_node_value(left) - get_node_value(right);
-          self.push(Node::Number(difference));
+          let difference = self._binary_operation(OperationEnum::Subtract);
+          self.push(difference);
         }
         code::MUL => {
-          let (left, right) = (self.pop(), self.pop());
-          let product = get_node_value(left) * get_node_value(right);
-          self.push(Node::Number(product));
+          let product = self._binary_operation(OperationEnum::Multiply);
+          self.push(product);
         }
         code::DIV => {
-          let (left, right) = (self.pop(), self.pop());
-          let quotient = get_node_value(left) / get_node_value(right);
-          self.push(Node::Number(quotient));
+          let quotient = self._binary_operation(OperationEnum::Divide);
+          self.push(quotient);
         }
         _ => {
           panic!("Unknown operation");
@@ -94,8 +91,19 @@ impl VirtualMachine {
   }
 
   // helper functions
-  pub fn get_constant(&mut self) -> Node {
+  pub fn _get_constant(&mut self) -> Node {
     let index = self.read_bytes() as i32;
     self.constants[index as usize]
+  }
+
+  pub fn _binary_operation(&mut self, operation: OperationEnum) -> Node {
+    let (left, right) = (self.pop(), self.pop());
+    let result = match operation {
+      OperationEnum::Add => get_node_value(left) + get_node_value(right),
+      OperationEnum::Subtract => get_node_value(left) - get_node_value(right),
+      OperationEnum::Multiply => get_node_value(left) * get_node_value(right),
+      OperationEnum::Divide => get_node_value(left) / get_node_value(right),
+    };
+    Node::Number(result)
   }
 }
