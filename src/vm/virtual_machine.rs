@@ -27,9 +27,21 @@ impl VirtualMachine {
   }
 
   pub fn compile(&mut self, _program: String) -> Option<Node> {
-    self.constants.push(Node::Number(2));
+    self.constants.push(Node::Number(10));
     self.constants.push(Node::Number(3));
-    self.code = [code::CONST, 0, code::CONST, 1, code::ADD, code::HALT].to_vec();
+    self.constants.push(Node::Number(5));
+    self.code = [
+      code::CONST,
+      0,
+      code::CONST,
+      1,
+      code::SUB,
+      code::CONST,
+      2,
+      code::ADD,
+      code::HALT,
+    ]
+    .to_vec();
     return self.main_loop();
   }
 
@@ -97,7 +109,8 @@ impl VirtualMachine {
   }
 
   pub fn _binary_operation(&mut self, operation: OperationEnum) -> Node {
-    let (left, right) = (self.pop(), self.pop());
+    // reverse oder of nodes, is last node on stack is first argument...
+    let (right, left) = (self.pop(), self.pop());
     let result = match operation {
       OperationEnum::Add => get_node_value(left) + get_node_value(right),
       OperationEnum::Subtract => get_node_value(left) - get_node_value(right),
