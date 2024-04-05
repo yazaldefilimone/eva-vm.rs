@@ -22,24 +22,23 @@ impl VirtualMachine {
     }
   }
 
-  pub fn compile(&mut self, _program: String) -> Node {
-    self.constants.push(Node::Number(42));
-    self.code = [code::OPERATION_CONST, 1, code::OPERATION_HALT].to_vec();
-    self.instruction_pointer = self.code[0];
+  pub fn compile(&mut self, _program: String) -> Option<Node> {
+    self.constants.push(Node::Number(402));
+    self.code = [code::OPERATION_CONST, 0, code::OPERATION_HALT].to_vec();
+    self.instruction_pointer = 0;
 
     return self.main_loop();
   }
 
-  pub fn main_loop(&mut self) -> Node {
+  pub fn main_loop(&mut self) -> Option<Node> {
     loop {
       match self.read_bytes() {
         code::OPERATION_HALT => {
-          return self.pop();
+          return Some(self.pop());
         }
         code::OPERATION_CONST => {
           let constant = self.get_constant();
-          self.push(Node::Number(constant));
-          // break;
+          self.push(constant);
         }
         _ => {
           panic!("Unknown operation");
@@ -72,8 +71,8 @@ impl VirtualMachine {
   }
 
   // helper functions
-  pub fn get_constant(&mut self) -> i32 {
-    let constant = self.read_bytes();
-    constant as i32
+  pub fn get_constant(&mut self) -> Node {
+    let index = self.read_bytes() as i32;
+    self.constants[index as usize]
   }
 }
