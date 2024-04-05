@@ -1,6 +1,9 @@
 use crate::bytecode::code;
-use crate::node::node::Node;
+use crate::node::node;
 use crate::utils::STACK_LIMIT;
+
+use node::get_node_value;
+use node::Node;
 
 // use node::NodeNumber;
 pub struct VirtualMachine {
@@ -23,22 +26,27 @@ impl VirtualMachine {
   }
 
   pub fn compile(&mut self, _program: String) -> Option<Node> {
-    self.constants.push(Node::Number(402));
-    self.code = [code::OPERATION_CONST, 0, code::OPERATION_HALT].to_vec();
-    self.instruction_pointer = 0;
-
+    self.constants.push(Node::Number(2));
+    self.constants.push(Node::Number(3));
+    self.code = [code::CONST, 0, code::CONST, 1, code::ADD, code::HALT].to_vec();
     return self.main_loop();
   }
 
   pub fn main_loop(&mut self) -> Option<Node> {
     loop {
-      match self.read_bytes() {
-        code::OPERATION_HALT => {
+      let current_byte = self.read_bytes();
+      match current_byte {
+        code::HALT => {
           return Some(self.pop());
         }
-        code::OPERATION_CONST => {
+        code::CONST => {
           let constant = self.get_constant();
           self.push(constant);
+        }
+        code::ADD => {
+          let (left, right) = (self.pop(), self.pop());
+          let sum = get_node_value(left) + get_node_value(right);
+          self.push(Node::Number(sum));
         }
         _ => {
           panic!("Unknown operation");
