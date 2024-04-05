@@ -1,1 +1,1 @@
-pub mod eva_vm;
+pub mod virtual_machine;
