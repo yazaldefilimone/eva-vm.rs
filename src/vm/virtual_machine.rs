@@ -3,8 +3,8 @@ use crate::node::node;
 use crate::utils;
 use node::Node;
 use node::OperationEnum;
+use utils::get_number_value;
 use utils::STACK_LIMIT;
-use utils::{get_number_value, get_string_value};
 
 // use node::NodeNumber;
 pub struct VirtualMachine {
@@ -27,7 +27,7 @@ impl VirtualMachine {
     }
   }
 
-  pub fn compile(&mut self, _program: String) -> Option<&Node> {
+  pub fn compile(&mut self, _program: String) -> &Node {
     self.constants.push(Node::Number(10));
     self.constants.push(Node::Number(3));
     self.constants.push(Node::Number(5));
@@ -46,17 +46,16 @@ impl VirtualMachine {
     return self.main_loop();
   }
 
-  pub fn main_loop(&mut self) -> Option<&Node> {
+  pub fn main_loop(&mut self) -> &Node {
     loop {
       let current_byte = self.read_bytes();
       match current_byte {
         code::HALT => {
-          return Some(self.pop());
+          return self.pop();
         }
         code::CONST => {
-          let constant = self._get_constant();
-          let node_clone = constant.clone();
-          self.push(node_clone);
+          let constant = self._get_constant().clone();
+          self.push(constant);
         }
         code::ADD => {
           let sum = self._binary_operation(OperationEnum::Add);
