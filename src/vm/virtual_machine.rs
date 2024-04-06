@@ -1,6 +1,9 @@
 use crate::bytecode::code;
 use crate::node::node;
 use crate::utils;
+use crate::utils::get_string_value;
+use crate::utils::is_number;
+use crate::utils::is_string;
 use node::Node;
 use node::OperationEnum;
 use utils::get_number_value;
@@ -28,21 +31,13 @@ impl VirtualMachine {
   }
 
   pub fn compile(&mut self, _program: String) -> &Node {
-    self.constants.push(Node::Number(10));
-    self.constants.push(Node::Number(3));
-    self.constants.push(Node::Number(5));
-    self.code = [
-      code::CONST,
-      0,
-      code::CONST,
-      1,
-      code::SUB,
-      code::CONST,
-      2,
-      code::ADD,
-      code::HALT,
-    ]
-    .to_vec();
+    // self.constants.push(Node::Number(10));
+    // self.constants.push(Node::Number(3));
+    // self.constants.push(Node::Number(5));
+    // strings
+    self.constants.push(Node::String("Hello, ".to_string()));
+    self.constants.push(Node::String("World!".to_string()));
+    self.code = [code::CONST, 0, code::CONST, 1, code::ADD, code::HALT].to_vec();
     return self.main_loop();
   }
 
@@ -112,12 +107,44 @@ impl VirtualMachine {
   pub fn _binary_operation(&mut self, operation: OperationEnum) -> Node {
     // reverse oder of nodes, is last node on stack is first argument...
     let (right, left) = (self.pop().clone(), self.pop().clone());
-    let result = match operation {
-      OperationEnum::Add => get_number_value(left).unwrap() + get_number_value(right).unwrap(),
-      OperationEnum::Subtract => get_number_value(left).unwrap() - get_number_value(right).unwrap(),
-      OperationEnum::Multiply => get_number_value(left).unwrap() * get_number_value(right).unwrap(),
-      OperationEnum::Divide => get_number_value(left).unwrap() / get_number_value(right).unwrap(),
+    let node = match operation {
+      OperationEnum::Add => self._add_operation(left, right),
+      OperationEnum::Subtract => self._subtract_operation(left, right),
+      OperationEnum::Multiply => self._multiply_operation(left, right),
+      OperationEnum::Divide => self._divide_operation(left, right),
     };
-    Node::Number(result)
+    node
+  }
+
+  fn _subtract_operation(&mut self, left: Node, right: Node) -> Node {
+    if is_number(&right) && is_number(&left) {
+      return Node::Number(get_number_value(left).unwrap() - get_number_value(right).unwrap());
+    }
+    panic!("Invalid operation");
+  }
+  fn _multiply_operation(&mut self, left: Node, right: Node) -> Node {
+    if is_number(&right) && is_number(&left) {
+      return Node::Number(get_number_value(left).unwrap() * get_number_value(right).unwrap());
+    }
+    panic!("Invalid operation");
+  }
+
+  fn _divide_operation(&mut self, left: Node, right: Node) -> Node {
+    if is_number(&right) && is_number(&left) {
+      return Node::Number(get_number_value(left).unwrap() / get_number_value(right).unwrap());
+    }
+    panic!("Invalid operation");
+  }
+
+  fn _add_operation(&mut self, left: Node, right: Node) -> Node {
+    if is_number(&right) && is_number(&left) {
+      return Node::Number(get_number_value(left).unwrap() + get_number_value(right).unwrap());
+    }
+    if is_string(&right) && is_string(&left) {
+      let left_string = get_string_value(&left).unwrap();
+      let right_string = get_string_value(&right).unwrap();
+      return Node::String(left_string.to_owned() + right_string);
+    }
+    panic!("Invalid operation");
   }
 }
