@@ -3,8 +3,8 @@ use crate::node::node;
 use crate::utils;
 use node::Node;
 use node::OperationEnum;
-use utils::get_node_value;
 use utils::STACK_LIMIT;
+use utils::{get_number_value, get_string_value};
 
 // use node::NodeNumber;
 pub struct VirtualMachine {
@@ -15,18 +15,19 @@ pub struct VirtualMachine {
   stack_pointer: usize,
 }
 
+const ARRAY_REPEAT_VALUE: Node = Node::Number(0);
 impl VirtualMachine {
   pub fn new() -> VirtualMachine {
     VirtualMachine {
       code: Vec::new(),
       constants: Vec::new(),
-      stack: [Node::Number(0); STACK_LIMIT],
+      stack: [ARRAY_REPEAT_VALUE; STACK_LIMIT], // Initialize the stack with zeros
       instruction_pointer: 0,
       stack_pointer: 0,
     }
   }
 
-  pub fn compile(&mut self, _program: String) -> Option<Node> {
+  pub fn compile(&mut self, _program: String) -> Option<&Node> {
     self.constants.push(Node::Number(10));
     self.constants.push(Node::Number(3));
     self.constants.push(Node::Number(5));
@@ -45,7 +46,7 @@ impl VirtualMachine {
     return self.main_loop();
   }
 
-  pub fn main_loop(&mut self) -> Option<Node> {
+  pub fn main_loop(&mut self) -> Option<&Node> {
     loop {
       let current_byte = self.read_bytes();
       match current_byte {
@@ -54,7 +55,8 @@ impl VirtualMachine {
         }
         code::CONST => {
           let constant = self._get_constant();
-          self.push(constant);
+          let node_clone = constant.clone();
+          self.push(node_clone);
         }
         code::ADD => {
           let sum = self._binary_operation(OperationEnum::Add);
@@ -93,29 +95,29 @@ impl VirtualMachine {
     self.stack[self.stack_pointer] = value;
   }
 
-  pub fn pop(&mut self) -> Node {
+  pub fn pop(&mut self) -> &Node {
     if self.stack_pointer == 0 {
       panic!("Empty stack");
     }
-    let value = self.stack[self.stack_pointer];
+    let value = &self.stack[self.stack_pointer];
     self.stack_pointer -= 1;
     value
   }
 
   // helper functions
-  pub fn _get_constant(&mut self) -> Node {
+  pub fn _get_constant(&mut self) -> &Node {
     let index = self.read_bytes() as i32;
-    self.constants[index as usize]
+    &self.constants[index as usize]
   }
 
   pub fn _binary_operation(&mut self, operation: OperationEnum) -> Node {
     // reverse oder of nodes, is last node on stack is first argument...
-    let (right, left) = (self.pop(), self.pop());
+    let (right, left) = (self.pop().clone(), self.pop().clone());
     let result = match operation {
-      OperationEnum::Add => get_node_value(left) + get_node_value(right),
-      OperationEnum::Subtract => get_node_value(left) - get_node_value(right),
-      OperationEnum::Multiply => get_node_value(left) * get_node_value(right),
-      OperationEnum::Divide => get_node_value(left) / get_node_value(right),
+      OperationEnum::Add => get_number_value(left).unwrap() + get_number_value(right).unwrap(),
+      OperationEnum::Subtract => get_number_value(left).unwrap() - get_number_value(right).unwrap(),
+      OperationEnum::Multiply => get_number_value(left).unwrap() * get_number_value(right).unwrap(),
+      OperationEnum::Divide => get_number_value(left).unwrap() / get_number_value(right).unwrap(),
     };
     Node::Number(result)
   }
