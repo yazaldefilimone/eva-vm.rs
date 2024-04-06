@@ -16,3 +16,17 @@ pub fn get_string_value(node: &Node) -> Option<&String> {
   }
   None
 }
+
+pub fn is_string(node: &Node) -> bool {
+  if let Node::String(_) = node {
+    return true;
+  }
+  false
+}
+
+pub fn is_number(node: &Node) -> bool {
+  if let Node::Number(_) = node {
+    return true;
+  }
+  false
+}
