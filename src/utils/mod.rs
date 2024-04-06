@@ -9,6 +9,7 @@ pub fn get_number_value(node: Node) -> Option<i32> {
   None
 }
 
+#[allow(dead_code)]
 pub fn get_string_value(node: &Node) -> Option<&String> {
   if let Node::String(value) = node {
     return Some(value);
