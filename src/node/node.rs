@@ -9,7 +9,9 @@ pub enum OperationEnum {
   Multiply,
   Divide,
 }
-#[derive(Clone, Copy)]
+
+#[derive(Clone)]
 pub enum Node {
   Number(i32),
+  String(String),
 }
