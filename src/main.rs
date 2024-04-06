@@ -19,7 +19,7 @@ impl Debug for Node {
 fn main() {
   let program = "42".to_string();
   let mut vm = VirtualMachine::new();
-  let result = vm.compile(program).expect("Result not found");
+  let result = vm.compile(program);
   println!("{:?}", get_number_value(result.clone()));
   println!("All done!");
 }
