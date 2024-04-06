@@ -10,6 +10,7 @@ pub enum OperationEnum {
   Divide,
 }
 
+#[allow(dead_code)]
 #[derive(Clone)]
 pub enum Node {
   Number(i32),
